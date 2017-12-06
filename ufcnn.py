@@ -41,49 +41,14 @@ def ufcnn_model_concat(sequence_length=5000,
                    kernel_initializer=init, activation=activation, dilation_rate=2, name='conv2')(conv1)
 
     #########################################################
-    # model.add_node(Convolution1D(nb_filter=nb_filter, filter_length=filter_length, border_mode='same', init=init), name='conv3', input='relu2')
-    # model.add_node(Activation(activation), name='relu3', input='conv3')
-
-
-    conv3 = Conv1D(filters=nb_filter, kernel_size=filter_length, padding='same',
-                   kernel_initializer=init, activation=activation, dilation_rate=4, name='conv3')(conv2)
-
-    #########################################################
-    # model.add_node(Convolution1D(nb_filter=nb_filter, filter_length=filter_length, border_mode='same', init=init), name='conv4', input='relu3')
-    # model.add_node(Activation(activation), name='relu4', input='conv4')
-
-    conv4 = Conv1D(filters=nb_filter, kernel_size=filter_length, padding='same',
-                   kernel_initializer=init, activation=activation, dilation_rate=8, name='conv4')(conv3)
-
-    #########################################################
-    # model.add_node(Convolution1D(nb_filter=nb_filter, filter_length=filter_length, border_mode='same', init=init), name='conv5', input='relu4')
-    # model.add_node(Activation(activation), name='relu5', input='conv5')
-
-    conv5 = Conv1D(filters=nb_filter, kernel_size=filter_length, padding='same',
-                   kernel_initializer=init, activation=activation, dilation_rate=8, name='conv5')(conv4)
-
-    #########################################################
-    # model.add_node(Convolution1D(nb_filter=nb_filter,filter_length=filter_length, border_mode='same', init=init),
-    #                 name='conv6',
-    #                 inputs=['relu3', 'relu5'],
-    #                 merge_mode='concat', concat_axis=-1)
-    # model.add_node(Activation(activation), name='relu6', input='conv6')
-
-
-    merge6 = merge([conv3, conv5], mode='concat')
-    conv6 = Conv1D(filters=nb_filter, kernel_size=filter_length, padding='same',
-                   kernel_initializer=init, activation=activation, dilation_rate=4, name='conv6')(merge6)
-
-    #########################################################
     # model.add_node(Convolution1D(nb_filter=nb_filter,filter_length=filter_length, border_mode='same', init=init),
     #                 name='conv7',
     #                 inputs=['relu2', 'relu6'],
     #                 merge_mode='concat', concat_axis=-1)
     # model.add_node(Activation(activation), name='relu7', input='conv7')
 
-    merge7 = merge([conv2, conv6], mode='concat')
-    conv7 = Conv1D(filters=nb_filter, kernel_size=filter_length, padding='same',
-                   kernel_initializer=init, activation=activation, dilation_rate=2, name='conv7')(merge7)
+    conv3 = Conv1D(filters=nb_filter, kernel_size=filter_length, padding='same',
+                   kernel_initializer=init, activation=activation, dilation_rate=2, name='conv3')(conv2)
 
     #########################################################
     # model.add_node(Convolution1D(nb_filter=nb_filter,filter_length=filter_length, border_mode='same', init=init),
@@ -92,9 +57,9 @@ def ufcnn_model_concat(sequence_length=5000,
     #                 merge_mode='concat', concat_axis=-1)
     # model.add_node(Activation(activation), name='relu8', input='conv8')
 
-    merge8 = merge([conv1, conv7], mode='concat')
-    conv8 = Conv1D(filters=nb_filter, kernel_size=filter_length, padding='same',
-                   kernel_initializer=init, activation=activation, name='conv8')(conv7)
+    merge4 = merge([conv1, conv3], mode='concat')
+    conv4 = Conv1D(filters=nb_filter, kernel_size=filter_length, padding='same',
+                   kernel_initializer=init, activation=activation, name='conv4')(merge4)
 
     #########################################################
     if regression:
@@ -103,9 +68,9 @@ def ufcnn_model_concat(sequence_length=5000,
         # model.add_output(name='output', input='conv9')
 
 
-        conv9 = Conv1D(filters=output_dim, kernel_size=sequence_length, padding='same',
-                       kernel_initializer=init, activation='linear', name='conv9')(conv8)
-        output = conv9
+        conv5 = Conv1D(filters=output_dim, kernel_size=sequence_length, padding='same',
+                       kernel_initializer=init, activation='linear', name='conv5')(conv4)
+        output = conv5
         # main_output = conv9.output
 
     else:
@@ -113,10 +78,10 @@ def ufcnn_model_concat(sequence_length=5000,
         # model.add_node(Activation('softmax'), name='activation', input='conv9')
         # model.add_output(name='output', input='activation')
 
-        conv9 = Conv1D(filters=output_dim, kernel_size=sequence_length, padding='same',
-                       kernel_initializer=init, activation='softmax', name='conv9')(conv8)
+        conv5 = Conv1D(filters=output_dim, kernel_size=sequence_length, padding='same',
+                       kernel_initializer=init, activation='softmax', name='conv5')(conv4)
         # main_output = activation.output
-        output = conv9
+        output = conv5
 
     # model.compile(optimizer=optimizer, loss={'output': loss})
 
