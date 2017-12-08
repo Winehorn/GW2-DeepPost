@@ -1,4 +1,4 @@
-from keras.layers import Input, ZeroPadding1D, Conv1D, Concatenate, Dense
+from keras.layers import Input, ZeroPadding1D, Conv1D, Concatenate, Dense, Flatten
 from keras.models import Model
 
 
@@ -6,24 +6,22 @@ def ufcnn_model(sequence_length=5000,
                 features=1,
                 nb_filter=150,
                 filter_length=5,
-                output_dim=1,
+                output_sequence_length=1,
                 optimizer='adagrad',
                 loss='mse',
-                regression=True,
-                class_mode=None,
                 activation="softplus",
                 init="lecun_uniform",
                 resolution_levels=3):
-    main_input = Input(name='input', shape=(None, features))
+    main_input = Input(name='input', shape=(sequence_length, features))
 
     #########################################################
 
-    input_padding = ZeroPadding1D(2)(main_input)  # to avoid lookahead bias
+    #input_padding = ZeroPadding1D(2)(main_input)  # to avoid lookahead bias
 
     #########################################################
 
-    H1 = Conv1D(filters=nb_filter, kernel_size=filter_length, padding='valid',
-                kernel_initializer=init, activation=activation, name='H1')(input_padding)
+    H1 = Conv1D(filters=nb_filter, kernel_size=filter_length, padding='causal',
+                kernel_initializer=init, activation=activation, name='H1')(main_input)
 
     h_list = [H1]
 
@@ -49,16 +47,11 @@ def ufcnn_model(sequence_length=5000,
 
     #########################################################
 
-    if regression:
-
-        G0 = Conv1D(filters=output_dim, kernel_size=sequence_length, padding='same',
+        G0 = Conv1D(filters=nb_filter, kernel_size=sequence_length, padding='same',
                     kernel_initializer=init, activation='linear', name='G0')(g_list[-1])
-        main_output = G0
-    else:
-
-        G0 = Conv1D(filters=output_dim, kernel_size=sequence_length, padding='same',
-                    kernel_initializer=init, activation='softmax', name='G0')(c_list[-1])
-        main_output = G0
+        F0 = Flatten()(G0)
+        D0 = Dense(output_sequence_length)(F0)
+        main_output = D0
 
     #########################################################
 
