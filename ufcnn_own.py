@@ -1,4 +1,4 @@
-from keras.layers import Input, ZeroPadding1D, Conv1D, Concatenate, Dense, Flatten, Dropout
+from keras.layers import Input, ZeroPadding1D, Conv1D, Concatenate, Dense, Flatten, Dropout, Add
 from keras.models import Model
 
 
@@ -47,7 +47,7 @@ def ufcnn_model(sequence_length=5000,
     c_list = list()
 
     for i in range(resolution_levels - 1, 0, -1):
-        c_list.append(Concatenate(name='C' + str(i))([hd_list[i-1], gd_list[resolution_levels - (i + 1)]]))
+        c_list.append(Add(name='C' + str(i))([hd_list[i-1], gd_list[resolution_levels - (i + 1)]]))
         g_list.append(Conv1D(filters=nb_filter, kernel_size=filter_length, padding='causal',
                              kernel_initializer=init, activation=activation, dilation_rate=2 ** i,
                              name='G' + str(i))(c_list[resolution_levels - (i + 1)]))

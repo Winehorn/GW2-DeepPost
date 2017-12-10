@@ -10,8 +10,8 @@ name = 'ufcnn/correct'
 sequence_length = 672        # same as in Roni Mittelman's paper - this is 2 times 32 - a line in Ronis input contains 33 numbers, but 1 is time and is omitted
 output_sequence_length = 192
 features = 1                # guess changed Ernst 20160301
-nb_filter = 50            # same as in Roni Mittelman's paper
-filter_length = 5           # same as in Roni Mittelman's paper
+nb_filter = 30            # same as in Roni Mittelman's paper
+filter_length = 10           # same as in Roni Mittelman's paper
 dropout = 0.4
 batch_size = 64
 
