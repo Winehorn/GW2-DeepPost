@@ -10,8 +10,9 @@ name = 'ufcnn/correct'
 sequence_length = 672        # same as in Roni Mittelman's paper - this is 2 times 32 - a line in Ronis input contains 33 numbers, but 1 is time and is omitted
 output_sequence_length = 192
 features = 1                # guess changed Ernst 20160301
-nb_filter = 30            # same as in Roni Mittelman's paper
+nb_filter = 50            # same as in Roni Mittelman's paper
 filter_length = 5           # same as in Roni Mittelman's paper
+dropout = 0.4
 batch_size = 64
 
 #cos, train_y = gen_testdata(sequence_length*100)
@@ -39,10 +40,10 @@ train_y = train_y.reshape(-1, output_sequence_length)
 
 model_new = ufcnn_model(sequence_length=sequence_length, filter_length=filter_length,
                         nb_filter=nb_filter, activation='relu',
-                        output_sequence_length=output_sequence_length, resolution_levels=3)
+                        output_sequence_length=output_sequence_length, dropout=dropout, resolution_levels=3)
 
-model_new.fit(x=train_x, y=train_y, batch_size=batch_size, epochs=1, validation_split=0.1,
-#           callbacks=[tb_callback]
+model_new.fit(x=train_x, y=train_y, batch_size=batch_size, epochs=10, validation_split=0.1,
+           #callbacks=[tb_callback]
 )
 
 #model_new.save('./models/' + name + '.h5')
