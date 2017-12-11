@@ -4,9 +4,9 @@ from keras.callbacks import TensorBoard
 from data_prep import gen_cosine_amp_for_supervised as gen_testdata
 from data_prep import print_data, series_to_supervised
 from ufcnn import ufcnn_model_concat
-from ufcnn_own import ufcnn_model
+from ufcnn_own import ufcnn_model_bn, ufcnn_model_fulldropout
 
-name = 'ufcnn/correct'
+name = 'ufcnn/bn'
 sequence_length = 672        # same as in Roni Mittelman's paper - this is 2 times 32 - a line in Ronis input contains 33 numbers, but 1 is time and is omitted
 output_sequence_length = 192
 features = 1                # guess changed Ernst 20160301
@@ -38,11 +38,11 @@ train_y = sell.values[:, sequence_length:]
 train_y = train_y.reshape(-1, output_sequence_length)
 
 
-model_new = ufcnn_model(sequence_length=sequence_length, filter_length=filter_length,
+model = ufcnn_model_bn(sequence_length=sequence_length, filter_length=filter_length,
                         nb_filter=nb_filter, activation='relu',
-                        output_sequence_length=output_sequence_length, dropout=dropout, resolution_levels=3)
+                        output_sequence_length=output_sequence_length, resolution_levels=3)
 
-model_new.fit(x=train_x, y=train_y, batch_size=batch_size, epochs=10, validation_split=0.1,
+model.fit(x=train_x, y=train_y, batch_size=batch_size, epochs=10, validation_split=0.1,
            #callbacks=[tb_callback]
 )
 
