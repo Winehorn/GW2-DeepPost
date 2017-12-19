@@ -4,14 +4,14 @@ from keras.callbacks import TensorBoard
 from data_prep import gen_cosine_amp_for_supervised as gen_testdata
 from data_prep import print_data, series_to_supervised
 from ufcnn import ufcnn_model_concat
-from ufcnn_own import ufcnn_model_bn, ufcnn_model_fulldropout
+from ufcnn_own import ufcnn_model_bn, ufcnn_model_fulldropout, ufcnn_model_mix
 
 name = 'ufcnn/bn'
-sequence_length = 672        # same as in Roni Mittelman's paper - this is 2 times 32 - a line in Ronis input contains 33 numbers, but 1 is time and is omitted
+sequence_length = 672
 output_sequence_length = 192
-features = 5                # guess changed Ernst 20160301
-nb_filter = 50            # same as in Roni Mittelman's paper
-filter_length = 10           # same as in Roni Mittelman's paper
+features = 5
+nb_filter = 50
+filter_length = 10
 dropout = 0.4
 batch_size = 64
 
@@ -64,13 +64,13 @@ train_y = sell.values[:, sequence_length:]
 train_y = train_y.reshape(-1, output_sequence_length)
 
 
-#model = ufcnn_model_fulldropout(sequence_length=sequence_length, features=features, filter_length=filter_length,
-                        #nb_filter=nb_filter, activation='relu',
-                        #output_sequence_length=output_sequence_length, resolution_levels=3)
+model = ufcnn_model_mix(sequence_length=sequence_length, features=features, filter_length=filter_length,
+                        nb_filter=nb_filter, activation='relu', dropout=dropout,
+                        output_sequence_length=output_sequence_length, resolution_levels=3)
 
-#model.fit(x=train_x, y=train_y, batch_size=batch_size, epochs=10, validation_split=0.1,
-           #callbacks=[tb_callback]
-#)
+model.fit(x=train_x, y=train_y, batch_size=batch_size, epochs=10, validation_split=0.1,
+           callbacks=[tb_callback]
+)
 
 #model_new.save('./models/' + name + '.h5')
 
