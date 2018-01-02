@@ -137,3 +137,17 @@ def series_to_supervised(data, n_in=1, n_out=1, dropnan=True):
     if dropnan:
         agg.dropna(inplace=True)
     return agg
+
+
+def win_classification_prep(sell, buy, nb_last_buy_values, in_sequence_length, sell_mean_window_length):
+    buy_x = buy.values[:, :in_sequence_length]
+    buy_last_mean = np.mean(buy_x[:, -nb_last_buy_values:], axis=1)
+    buy_last_mean = buy_last_mean.reshape(-1, 1)
+    sell_y = sell.values[:, in_sequence_length:]
+    sell_y_mean = np.concatenate([sell_y[:, i:i+sell_mean_window_length] for i in range(0, sell_y.shape[1]-sell_mean_window_length+1)], axis=1)
+    sell_y_mean = sell_y_mean.reshape(sell.shape[0], -1, sell_mean_window_length)
+    sell_y_mean = np.mean(sell_y_mean, axis=-1)
+    diff_y = np.subtract(sell_y_mean, buy_last_mean)
+    train_y = np.zeros((sell.shape[0], 1))
+    train_y[np.where(diff_y > sell_y_mean * 0.15)[0]] = 1
+    return train_y.astype(int)

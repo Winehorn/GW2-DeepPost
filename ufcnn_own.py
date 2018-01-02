@@ -57,10 +57,11 @@ def ufcnn_model_fulldropout(sequence_length=5000,
 
     G0 = Conv1D(filters=nb_filter, kernel_size=sequence_length, padding='causal',
                     kernel_initializer=init, activation=activation, name='G0')(gd_list[-1])
-    GD0 = Dropout(dropout, name='GD0')(G0)
-    F0 = Flatten(name='F0')(GD0)
-    D0 = Dense(output_sequence_length, name="D0")(F0)
-    main_output = D0
+    #GD0 = Dropout(dropout, name='GD0')(G0)
+    F0 = Flatten(name='F0')(G0)
+    D0 = Dense(output_sequence_length, activation="relu", name="D0")(F0)
+    D01 = Dense(1, activation="sigmoid", name="D01")(D0)
+    main_output = D01
 
     #########################################################
 
